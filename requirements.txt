@@ -1,1 +1,1 @@
-LinkChecker==10.2.1
+LinkChecker==10.6.0
