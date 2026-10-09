@@ -12,10 +12,10 @@ INPUT_FILENAME = "linkchecker-out.xml"
 OUTPUT_FILENAME = "404.md" if OUTPUT_IN_MARKDOWN else "404.txt"
 ATTACHMENT_FILENAME = "report.md" if OUTPUT_IN_MARKDOWN else "report.txt"
 ATTACHMENT_MIME_SUBTYPE = "markdown" if OUTPUT_IN_MARKDOWN else "plain"
-URL = "https://docs.csc.fi/"
+SITE_URL = os.environ['SITE_URL']
 
 
-subprocess.run(["linkchecker", "--check-extern", "--user-agent", "Mozilla/5.0 (compatible; LinkChecker/9.3; +http://wummel.github.io/linkchecker/)", "-F", "xml", "-q", URL], check=False)
+subprocess.run(["linkchecker", "--check-extern", "--user-agent", "Mozilla/5.0 (compatible; LinkChecker/9.3; +http://wummel.github.io/linkchecker/)", "-F", "xml", "-q", SITE_URL], check=False)
 
 print("BROKEN LINKS REPORT: \n")
 report = Report(INPUT_FILENAME)
@@ -29,7 +29,7 @@ msg = EmailMessage()
 msg["From"] = "noreply@csc.fi"
 msg["Subject"] = f"Broken links report for {report.month}"
 msg["To"] = os.getenv('EMAIL_RECIPIENT')
-msg.set_content(f"You will find attached the broken links report of {URL} for {report.month}.")
+msg.set_content(f"You will find attached the broken links report of {SITE_URL} for {report.month}.")
 msg.add_attachment(open(OUTPUT_FILENAME, "r", encoding="utf-8").read(),
                    subtype=ATTACHMENT_MIME_SUBTYPE,
                    filename=ATTACHMENT_FILENAME)

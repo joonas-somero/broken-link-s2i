@@ -2,7 +2,7 @@ apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   app: broken-link
-message: "App for testing docs.csc.fi and report broken links"
+message: "App for testing website and report broken links"
 metadata:
   annotations:
     description: "Check links broken"
@@ -21,6 +21,10 @@ parameters:
   description: Branch used in the GitHub repo
   required: true
   value: main
+
+- name: SITE_URL
+  description: URL of the website to test
+  required: true
 
 - name: EMAIL_RECIPIENT
   description: Email address of the recipient
@@ -51,11 +55,6 @@ objects:
       type: Git
     strategy:
       sourceStrategy:
-        env:
-        - name: EMAIL_RECIPIENT
-          value: ${EMAIL_RECIPIENT}
-        - name: OUTPUT_IN_MARKDOWN
-          value: ${OUTPUT_IN_MARKDOWN}
         from:
           kind: ImageStreamTag
           name: python:3.9-ubi8
@@ -90,4 +89,11 @@ objects:
             containers:
               - name: broken-link
                 image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/broken-link:latest
+                env:
+                  - name: SITE_URL
+                    value: ${SITE_URL}
+                  - name: EMAIL_RECIPIENT
+                    value: ${EMAIL_RECIPIENT}
+                  - name: OUTPUT_IN_MARKDOWN
+                    value: ${OUTPUT_IN_MARKDOWN}
             restartPolicy: OnFailure
