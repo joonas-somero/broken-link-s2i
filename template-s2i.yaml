@@ -26,16 +26,35 @@ parameters:
   description: URL of the website to test
   required: true
 
+- name: EMAIL_SENDER
+  description: Email address of the sender
+  required: true
+
 - name: EMAIL_RECIPIENT
   description: Email address of the recipient
   required: true
 
-- name: OUTPUT_IN_MARKDOWN
+- name: EMAIL_SMTP
+  description: SMTP server for sending the email
+  required: true
+
+- name: REPORT_IN_MARKDOWN
   description: Send email attachment in Markdown format
   value: "true"
   required: false
 
 objects:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: broken-link
+    name: broken-link-config
+  data:
+    email.sender: ${EMAIL_SENDER}
+    email.recipient: ${EMAIL_RECIPIENT}
+    email.smtp: ${EMAIL_SMTP}
+
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
@@ -92,8 +111,21 @@ objects:
                 env:
                   - name: SITE_URL
                     value: ${SITE_URL}
+                  - name: EMAIL_SENDER
+                    valueFrom:
+                      configMapKeyRef:
+                        name: broken-link-config
+                        key: email.sender
                   - name: EMAIL_RECIPIENT
-                    value: ${EMAIL_RECIPIENT}
-                  - name: OUTPUT_IN_MARKDOWN
-                    value: ${OUTPUT_IN_MARKDOWN}
+                    valueFrom:
+                      configMapKeyRef:
+                        name: broken-link-config
+                        key: email.recipient
+                  - name: EMAIL_SMTP
+                    valueFrom:
+                      configMapKeyRef:
+                        name: broken-link-config
+                        key: email.smtp
+                  - name: REPORT_IN_MARKDOWN
+                    value: ${REPORT_IN_MARKDOWN}
             restartPolicy: OnFailure
