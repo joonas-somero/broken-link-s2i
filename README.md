@@ -12,7 +12,7 @@ You will need four parameters:
 - EMAIL_RECIPIENT: Email address of the recipient
 
 Optional parameters:
-- OUTPUT_IN_MARKDOWN: (true|false) Send email attachment in Markdown format. Default true
+- REPORT_IN_MARKDOWN: (true|false) Send email attachment in Markdown format. Default true
 
 Example:
 ```shell
